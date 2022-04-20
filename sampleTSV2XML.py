@@ -10,29 +10,33 @@ Example command lines:
 ENA's guidance on the XML structure:
     https://ena-docs.readthedocs.io/en/latest/submit/samples/programmatic.html
 
-Mandatory column names: TITLE, isolate or strain, host, host health state, collection date, geographic location (country and/or sea), TAXON_ID, SCIENTIFIC_NAME
-Columns TITLE, TAXON_ID, and SCIENTIFIC_NAME are not considered as sample attributes. So they should not be included for the -a parameter.
-Moreover, "isolate" or "strain" should not be put in the list of sample attributes.
+The input TSV file for argument '-i':
+    Mandatory column names in the TSV file for argument -i: TITLE, isolate or strain, host, host health state, collection date,
+    geographic location (country and/or sea), TAXON_ID, SCIENTIFIC_NAME. Columns TITLE, TAXON_ID, and SCIENTIFIC_NAME are not
+    considered as sample attributes. So they should not be included for the -a parameter. Moreover, "isolate" or "strain" should
+    not be put in the list of sample attributes.
 
-Copyright 2020 Yu Wan <wanyuac@126.com>
-All rights reserved
-Publication: 18 June 2020; last modification: 29 June 2020
+Argument '-a': This argument is designed for including a subset of attribute columns (from the input TSV file) into the output XML
+    file so users have some flexibility in determining the content in the output file.
+
+Copyright (C) 2020-2022 Yu Wan <wanyuac@126.com>
+Licensed under the GNU General Public Licence version 3 (GPLv3) <https://www.gnu.org/licenses/>.
+Publication: 18 June 2020; last modification: 19 April 2022
 """
 
 import os
 import sys
-import pandas as pd
+import pandas
 from argparse import ArgumentParser
 
 
 def parse_arguments():
     parser = ArgumentParser(description = "Convert a TSV file to an XML file for registering samples to the ENA database")
-    parser.add_argument("-i", dest = "i", type = str, required = True, help = "Path to the input TSV file")
-    parser.add_argument("-s", dest = "s", action = "store_true", required = False, help = "Set it to choose column \"strain\" for indices. Otherwise, column \"isolate\" will be used.")
-    parser.add_argument("-a", dest = "a", type = str, required = False, default = None, help = "Path to a text file listing names of sample attributes (excluding 'isolate' and 'strain'). One name per line.")  # Path to a text file specifying columns for sample attributes.
-    parser.add_argument("-c", dest = "c", type = str, required = False, default = None, help = "Accession number of ENA's sample checklist, such as ERC000028")  # Path to a text file specifying columns for sample attributes.
-    parser.add_argument("-t", dest = "t", type = str, required = False, default = "", help = "Name of the centre in which the primary investigator has worked")
-
+    parser.add_argument("-i", dest = "i", type = str, required = True, help = "Path to an input TSV file containing at least a column \'isolate\' or \'strain\' and possibly columns of attributes.")
+    parser.add_argument("-s", dest = "s", action = "store_true", required = False, help = "(Optional) Set it to choose column \"strain\" for indices. Otherwise, column \"isolate\" will be used.")
+    parser.add_argument("-a", dest = "a", type = str, required = False, default = None, help = "(Optional) Path to a text file listing names of sample attributes (excluding 'isolate' and 'strain') listed in the input TSV file (\'-i\'). One attribute name per line.")  # Path to a text file specifying columns for sample attributes.
+    parser.add_argument("-c", dest = "c", type = str, required = False, default = None, help = "(Optional) Accession number of ENA's sample checklist, such as ERC000028")  # Path to a text file specifying columns for sample attributes.
+    parser.add_argument("-t", dest = "t", type = str, required = False, default = "", help = "(Optional) Name of the centre in which the primary investigator has worked")
     return parser.parse_args()
 
 
@@ -43,7 +47,7 @@ def main():
     id_col = "strain" if args.s else "isolate"
     if os.path.exists(args.i):
         try:
-            tab = pd.read_csv(args.i, index_col = id_col, sep = "\t", dtype = str)  # Returns a DataFrame object
+            tab = pandas.read_csv(args.i, index_col = id_col, sep = "\t", dtype = str)  # Returns a DataFrame object
         except (KeyError, ValueError):
             sys.exit("Error: neither 'isolate' nor 'strain' is found in column names.")
     else:
@@ -105,7 +109,10 @@ def print_sample_block(sample, row, attrs, checklist, use_strain, centre):
     print(T4 + "<VALUE>%s</VALUE>" % sample)
     print(T3 + "</SAMPLE_ATTRIBUTE>")
     
-    ## Print other attributes
+    """
+	Print other attributes: attribute names are listed in the input text file for argument '-a' and attribute values are
+	listed in corresponding columns in the input TSV file for argument '-i'.
+	"""
     for a in attrs:
         print(T3 + "<SAMPLE_ATTRIBUTE>")
         print(T4 + "<TAG>%s</TAG>" % a)
