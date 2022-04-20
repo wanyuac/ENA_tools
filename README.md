@@ -9,7 +9,7 @@ Scripts for submitting sequence data to the ENA database
 
 The easiest way to register a study (BioProject) with the ENA database is using the interactive webpage on the [Webin Submissions Portal](https://www.ebi.ac.uk/ena/submit/webin/).
 
-![register_study](.\Figure\register_study.png)
+![register_study](Figure/register_study.png)
 
 Output: a BioProject accession.
 
@@ -23,12 +23,12 @@ The easiest way to register samples with the ENA database is using the interacti
 
 - Click the link "Register Samples":
 
-![register_samples_1](.\Figure\register_samples_1.png)
+![register_samples_1](Figure/register_samples_1.png)
 
 - Download spreadsheet to register samples > Pathogen Checklists > ENA prokaryotic pathogen minimal sample checklist (note the permitted values in drop-down lists) > Selected recommended and optional fields in addition to mandatory fields > Next > Download TSV Template
 - Upload filled spreadsheet (TSV format) to register samples
 
-![register_samples_2](.\Figure\register_samples_2.png)
+![register_samples_2](Figure/register_samples_2.png)
 
 - Download the accessions if the submission is successful.
 
