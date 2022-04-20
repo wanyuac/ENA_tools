@@ -3,7 +3,7 @@ Scripts for submitting sequence data to the ENA database
 
 [ENA's general guide on data submission](https://ena-docs.readthedocs.io/en/latest/submit/general-guide.html)
 
-
+<br/>
 
 ## 1.  Register a study
 
